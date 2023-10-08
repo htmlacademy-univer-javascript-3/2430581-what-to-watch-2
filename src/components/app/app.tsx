@@ -1,4 +1,4 @@
-import { FilmDataProps } from '../../types/film-data-props.ts';
+import { FilmsData } from '../../types/film-data.ts';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AppRoute, AuthStatus } from '../../const/const.ts';
 import Main from '../../pages/main/main.tsx';
@@ -9,21 +9,36 @@ import AddReview from '../../pages/add-review/add-review.tsx';
 import Player from '../../pages/player/player.tsx';
 import NotFound404 from '../../pages/not-found-404/not-found-404.tsx';
 import PrivateRoute from '../private-route/private-route.tsx';
+import { GenresData } from '../../types/genres-data.ts';
+import ScrollToTop from '../scroll-to-top/scroll-to-top.tsx';
+import { ReviewsData } from '../../types/reviews-data.ts';
 
-const App = ({name, genre, promoDate}: FilmDataProps) =>
-  (
+type AppProps = {
+  filmsData: FilmsData;
+  genresData: GenresData;
+  reviewsData: ReviewsData;
+}
+
+function App ({filmsData, genresData, reviewsData}: AppProps) {
+  return (
     <BrowserRouter>
+      <ScrollToTop/>
       <Routes>
         <Route
           path={AppRoute.Main}
           element={
             <Main
-              name={name}
-              genre={genre}
-              promoDate={promoDate}
+              filmsData={filmsData}
+              genresData={genresData}
             />
           }
         >
+          <Route
+            path={AppRoute.Genre}
+            element={
+              <Main filmsData={filmsData} genresData={genresData}/>
+            }
+          />
         </Route>
         <Route
           path={AppRoute.SignIn}
@@ -33,29 +48,32 @@ const App = ({name, genre, promoDate}: FilmDataProps) =>
         <Route
           path={AppRoute.MyList}
           element={
-            <PrivateRoute authStatus={AuthStatus.NoAuth}>
-              <MyList></MyList>
+            <PrivateRoute authStatus={AuthStatus.Auth}>
+              <MyList filmsData={filmsData}></MyList>
             </PrivateRoute>
           }
         >
         </Route>
         <Route
           path={AppRoute.Film}
-          element={<Film></Film>}
+          element={<Film filmsData={filmsData} reviewsData={reviewsData}></Film>}
         >
+          {/*<Route path={FilmRoute.Reviews} element={<Film filmsData={filmsData}></Film> }/>*/}
+          {/*<Route path={FilmRoute.Overview}/>*/}
+          {/*<Route path={FilmRoute.Details}/>*/}
         </Route>
         <Route
           path={AppRoute.AddReview}
           element={
-            <PrivateRoute authStatus={AuthStatus.NoAuth}>
-              <AddReview></AddReview>
+            <PrivateRoute authStatus={AuthStatus.Auth}>
+              <AddReview filmsData={filmsData}></AddReview>
             </PrivateRoute>
           }
         >
         </Route>
         <Route
           path={AppRoute.Player}
-          element={<Player></Player>}
+          element={<Player filmsData={filmsData}></Player>}
         >
         </Route>
         <Route
@@ -66,5 +84,5 @@ const App = ({name, genre, promoDate}: FilmDataProps) =>
       </Routes>
     </BrowserRouter>
   );
-
+}
 export default App;
