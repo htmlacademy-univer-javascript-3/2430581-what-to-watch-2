@@ -1,7 +1,7 @@
 export enum AuthStatus {
   Auth = 'AUTH',
   NoAuth = 'NOAUTH',
-  Unknown = 'UNKNOW'
+  Unknown = 'UNKNOWN'
 }
 
 export enum AppRoute {
