@@ -1,4 +1,4 @@
-import { FilmData } from '../../types/film-data.ts';
+import { FilmData } from '../../types';
 import Header from '../header/header.tsx';
 import { HeaderStyleType } from '../../const/const.ts';
 import MyListBtn from '../my-list-btn/my-list-btn.tsx';

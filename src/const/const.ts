@@ -11,7 +11,6 @@ export enum AppRoute {
   Film = '/films/:id/:info',
   AddReview = '/films/:id/review',
   Player = '/player/:id',
-  Genre = ':genre',
 }
 
 export enum FilmRoute {
@@ -25,3 +24,5 @@ export enum HeaderStyleType {
   User = 'user-page__head',
   Unset = '',
 }
+
+export const GENRE_ALL_GENRES = 'All genres';

@@ -1,4 +1,4 @@
-import { FilmData } from '../../types/film-data.ts';
+import { FilmData } from '../../types';
 import { Link } from 'react-router-dom';
 import { AppRoute, FilmRoute } from '../../const/const.ts';
 import VideoPlayer from '../video-player/video-player.tsx';
@@ -37,7 +37,6 @@ const FilmCard = ({film, clickHandler}: FilmCardProps): JSX.Element => {
 
   return (
     <article
-      key={film.id}
       onClick={() => clickHandler(film)}
       onMouseOver={mouseOverHandler}
       onMouseOut={mouseOutHandler}

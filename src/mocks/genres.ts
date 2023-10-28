@@ -1,4 +1,4 @@
-import { GenresData } from '../types/genres-data.ts';
+import { GenresData } from '../types';
 
 export const genresData: GenresData = [
   {

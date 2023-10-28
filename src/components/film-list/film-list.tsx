@@ -1,18 +1,16 @@
 import FilmCard from '../film-card/film-card.tsx';
-import { FilmData, FilmsData } from '../../types/film-data.ts';
+import { FilmData, FilmsData } from '../../types';
 
 type FilmListProps = {
   filmsData: FilmsData;
   maxCards?: number;
-  genre?: string;
   clickHandler?: (item: FilmData) => void;
 }
 
-const FilmList = ({filmsData, maxCards, genre, clickHandler}: FilmListProps): JSX.Element => (
+const FilmList = ({filmsData, maxCards, clickHandler}: FilmListProps): JSX.Element => (
   <div className="catalog__films-list">
     {
       filmsData
-        .filter((item) => genre ? item.genre.toLowerCase() === genre?.toLowerCase() : item)
         .filter((item, index) => maxCards ? index < maxCards : item)
         .map((item): JSX.Element => (
           <FilmCard

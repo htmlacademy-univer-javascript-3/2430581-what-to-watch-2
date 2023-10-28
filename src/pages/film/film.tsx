@@ -1,5 +1,5 @@
 import Header from '../../components/header/header.tsx';
-import { FilmsData } from '../../types/film-data.ts';
+import { FilmsData } from '../../types';
 import NotFound404 from '../not-found-404/not-found-404.tsx';
 import { Link, useParams } from 'react-router-dom';
 import FilmList from '../../components/film-list/film-list.tsx';
@@ -7,7 +7,7 @@ import Footer from '../../components/footer/footer.tsx';
 import { AppRoute, FilmRoute } from '../../const/const.ts';
 import { Details, Overview, Reviews } from './film-tabs';
 import FilmNav from './film-nav/film-nav.tsx';
-import { ReviewsData } from '../../types/reviews-data.ts';
+import { ReviewsData } from '../../types';
 import MyListBtn from '../../components/my-list-btn/my-list-btn.tsx';
 
 const LIKE_THIS_CARDS = 4;

@@ -1,6 +1,4 @@
-import { FilmsData } from '../../types/film-data.ts';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { AppRoute, AuthStatus } from '../../const/const.ts';
 import Main from '../../pages/main/main.tsx';
 import SignIn from '../../pages/sign-in/sign-in.tsx';
 import MyList from '../../pages/my-list/my-list.tsx';
@@ -9,17 +7,16 @@ import AddReview from '../../pages/add-review/add-review.tsx';
 import Player from '../../pages/player/player.tsx';
 import NotFound404 from '../../pages/not-found-404/not-found-404.tsx';
 import PrivateRoute from '../private-route/private-route.tsx';
-import { GenresData } from '../../types/genres-data.ts';
 import ScrollToTop from '../scroll-to-top/scroll-to-top.tsx';
-import { ReviewsData } from '../../types/reviews-data.ts';
+import { FilmsData, ReviewsData } from '../../types';
+import { AppRoute, AuthStatus } from '../../const/const.ts';
 
 type AppProps = {
   filmsData: FilmsData;
-  genresData: GenresData;
   reviewsData: ReviewsData;
 }
 
-function App ({filmsData, genresData, reviewsData}: AppProps) {
+function App ({filmsData, reviewsData}: AppProps) {
   return (
     <BrowserRouter>
       <ScrollToTop/>
@@ -27,18 +24,9 @@ function App ({filmsData, genresData, reviewsData}: AppProps) {
         <Route
           path={AppRoute.Main}
           element={
-            <Main
-              filmsData={filmsData}
-              genresData={genresData}
-            />
+            <Main/>
           }
         >
-          <Route
-            path={AppRoute.Genre}
-            element={
-              <Main filmsData={filmsData} genresData={genresData}/>
-            }
-          />
         </Route>
         <Route
           path={AppRoute.SignIn}
@@ -58,9 +46,6 @@ function App ({filmsData, genresData, reviewsData}: AppProps) {
           path={AppRoute.Film}
           element={<Film filmsData={filmsData} reviewsData={reviewsData}></Film>}
         >
-          {/*<Route path={FilmRoute.Reviews} element={<Film filmsData={filmsData}></Film> }/>*/}
-          {/*<Route path={FilmRoute.Overview}/>*/}
-          {/*<Route path={FilmRoute.Details}/>*/}
         </Route>
         <Route
           path={AppRoute.AddReview}
