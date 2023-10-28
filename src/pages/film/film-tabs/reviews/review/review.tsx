@@ -1,4 +1,4 @@
-import { ReviewData } from '../../../../../types/reviews-data.ts';
+import { ReviewData } from '../../../../../types';
 
 type ReviewProps = {
   review: ReviewData;

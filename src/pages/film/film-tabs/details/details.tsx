@@ -1,5 +1,7 @@
-import { FilmData } from '../../../../types/film-data.ts';
+import { Fragment } from 'react';
+import { FilmData } from '../../../../types';
 import NotFound404 from '../../../not-found-404/not-found-404.tsx';
+
 
 type DetailsProps = {
   film?: FilmData;
@@ -18,9 +20,9 @@ const Details = ({film}: DetailsProps): JSX.Element => film ? (
           {
             film.starring.map((item) =>
               (
-                <>
+                <Fragment key={self.crypto.randomUUID()}>
                   {item} <br></br>
-                </>
+                </Fragment>
               )
             )
           }

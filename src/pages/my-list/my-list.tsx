@@ -1,4 +1,4 @@
-import { FilmsData } from '../../types/film-data.ts';
+import { FilmsData } from '../../types';
 import FilmList from '../../components/film-list/film-list.tsx';
 import Header from '../../components/header/header.tsx';
 import Footer from '../../components/footer/footer.tsx';

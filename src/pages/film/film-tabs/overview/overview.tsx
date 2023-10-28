@@ -1,4 +1,4 @@
-import { FilmData } from '../../../../types/film-data.ts';
+import { FilmData } from '../../../../types';
 import NotFound404 from '../../../not-found-404/not-found-404.tsx';
 
 const MAX_AUTHORS = 4;
