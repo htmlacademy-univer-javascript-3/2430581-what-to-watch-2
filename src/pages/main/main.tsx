@@ -1,14 +1,18 @@
+import { useState } from 'react';
 import { FilmData } from '../../types';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import FilmList from '../../components/film-list/film-list.tsx';
 import FilmPreview from '../../components/film-preview/film-preview.tsx';
 import Footer from '../../components/footer/footer.tsx';
-import { useState } from 'react';
 import GenreList from '../../components/genre-list/genre-list.tsx';
 import { changeGenre, getFilmsByGenre } from '../../store/action.ts';
-import { useAppDispatch, useAppSelector } from '../../hooks';
 import { filmsData } from '../../mocks/films.ts';
+import { ShowMoreBtn } from '../../ui-components';
+
+const START_CARDS_COUNT = 8;
 
 function Main (): JSX.Element {
+  const [cardsCount, setCardsCount] = useState(START_CARDS_COUNT);
   const dispatch = useAppDispatch();
   const genreName = useAppSelector((state) => state.genre);
   const films = useAppSelector((state) => state.films);
@@ -17,9 +21,15 @@ function Main (): JSX.Element {
   const handleFilmCardClick = (film: FilmData) => {
     setFilmPreview(film);
   };
+  const handleBtnClick = () => {
+    if (cardsCount < films.length) {
+      setCardsCount((prevState) => prevState + START_CARDS_COUNT);
+    }
+  };
   const handleGenreClick = (genre: string) => {
     dispatch(changeGenre({genre}));
     dispatch(getFilmsByGenre({genre}));
+    setCardsCount(START_CARDS_COUNT);
   };
   return (
     <>
@@ -31,11 +41,13 @@ function Main (): JSX.Element {
 
           <GenreList filmsData={filmsData} activeGenre={genreName} clickHandler={handleGenreClick}/>
 
-          <FilmList filmsData={films} clickHandler={handleFilmCardClick}/>
+          <FilmList filmsData={films} maxCards={cardsCount} clickHandler={handleFilmCardClick}/>
 
-          <div className="catalog__more">
-            <button className="catalog__button" type="button">Show more</button>
-          </div>
+          {
+            cardsCount < films.length && (
+              <ShowMoreBtn clickHandler={handleBtnClick}/>
+            )
+          }
         </section>
 
         <Footer/>
