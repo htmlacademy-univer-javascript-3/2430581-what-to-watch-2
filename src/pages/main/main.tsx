@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { FilmData } from '../../types';
+import { FilmPreviewData } from '../../types';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import FilmList from '../../components/film-list/film-list.tsx';
 import FilmPreview from '../../components/film-preview/film-preview.tsx';
 import Footer from '../../components/footer/footer.tsx';
 import GenreList from '../../components/genre-list/genre-list.tsx';
 import { changeGenre, getFilmsByGenre } from '../../store/action.ts';
-import { filmsData } from '../../mocks/films.ts';
 import { ShowMoreBtn } from '../../ui-components';
 
 const START_CARDS_COUNT = 8;
@@ -16,9 +15,10 @@ function Main (): JSX.Element {
   const dispatch = useAppDispatch();
   const genreName = useAppSelector((state) => state.genre);
   const films = useAppSelector((state) => state.films);
+  const sortedFilms = useAppSelector((state) => state.sortedFilms);
   const [firstFilm] = films;
   const [filmPreview, setFilmPreview] = useState(firstFilm);
-  const handleFilmCardClick = (film: FilmData) => {
+  const handleFilmCardClick = (film: FilmPreviewData) => {
     setFilmPreview(film);
   };
   const handleBtnClick = () => {
@@ -33,18 +33,18 @@ function Main (): JSX.Element {
   };
   return (
     <>
-      <FilmPreview film={filmPreview}/>
+      <FilmPreview filmPreview={filmPreview}/>
 
       <div className="page-content">
         <section className="catalog">
           <h2 className="catalog__title visually-hidden">Catalog</h2>
 
-          <GenreList filmsData={filmsData} activeGenre={genreName} clickHandler={handleGenreClick}/>
+          <GenreList filmsPreviewData={films} activeGenre={genreName} clickHandler={handleGenreClick}/>
 
-          <FilmList filmsData={films} maxCards={cardsCount} clickHandler={handleFilmCardClick}/>
+          <FilmList filmsPreviewData={sortedFilms} maxCards={cardsCount} clickHandler={handleFilmCardClick}/>
 
           {
-            cardsCount < films.length && (
+            cardsCount < sortedFilms.length && (
               <ShowMoreBtn clickHandler={handleBtnClick}/>
             )
           }

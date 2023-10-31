@@ -1,21 +1,21 @@
 import FilmCard from '../film-card/film-card.tsx';
-import { FilmData, FilmsData } from '../../types';
+import { FilmsPreviewData, FilmPreviewData } from '../../types';
 
 type FilmListProps = {
-  filmsData: FilmsData;
+  filmsPreviewData: FilmsPreviewData;
   maxCards?: number;
-  clickHandler?: (item: FilmData) => void;
+  clickHandler?: (item: FilmPreviewData) => void;
 }
 
-const FilmList = ({filmsData, maxCards, clickHandler}: FilmListProps): JSX.Element => (
+const FilmList = ({filmsPreviewData, maxCards, clickHandler}: FilmListProps): JSX.Element => (
   <div className="catalog__films-list">
     {
-      filmsData
+      filmsPreviewData
         .filter((item, index) => maxCards ? index < maxCards : item)
         .map((item): JSX.Element => (
           <FilmCard
             key={item.id}
-            film={item}
+            filmPreview={item}
             clickHandler={() => clickHandler ? clickHandler(item) : ''}
           />
         ))
