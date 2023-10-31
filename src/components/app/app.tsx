@@ -10,6 +10,8 @@ import PrivateRoute from '../private-route/private-route.tsx';
 import ScrollToTop from '../scroll-to-top/scroll-to-top.tsx';
 import { FilmsData, ReviewsData } from '../../types';
 import { AppRoute, AuthStatus } from '../../const/const.ts';
+import { useAppSelector } from '../../hooks';
+import { LoadingScreen } from '../loading-screen/loading-screen.tsx';
 
 type AppProps = {
   filmsData: FilmsData;
@@ -17,6 +19,14 @@ type AppProps = {
 }
 
 function App ({filmsData, reviewsData}: AppProps) {
+  const isFilmsDataLoading = useAppSelector((state) => state.isFilmsDataLoading);
+
+  if (isFilmsDataLoading) {
+    return (
+      <LoadingScreen />
+    );
+  }
+
   return (
     <BrowserRouter>
       <ScrollToTop/>
