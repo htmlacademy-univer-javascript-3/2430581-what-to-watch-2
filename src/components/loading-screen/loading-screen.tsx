@@ -1,3 +1,4 @@
+import './loading-screen.css';
 export const LoadingScreen = (): JSX.Element => (
-  <img src="/gif/loading.gif" alt="loading" />
+  <img className="loading-screen-spinner" src="/gif/loading.gif" alt="loading" />
 );

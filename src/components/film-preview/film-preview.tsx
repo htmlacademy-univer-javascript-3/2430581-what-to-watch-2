@@ -1,7 +1,7 @@
 import { FilmPreviewData } from '../../types';
 import Header from '../header/header.tsx';
 import { HeaderStyleType } from '../../const/const.ts';
-import MyListBtn from '../my-list-btn/my-list-btn.tsx';
+import { MyListBtn } from '../../ui-components';
 
 type FilmPreviewProps = {
   filmPreview: FilmPreviewData;
@@ -19,7 +19,6 @@ const FilmPreview = ({filmPreview}: FilmPreviewProps): JSX.Element => (
     <h1 className="visually-hidden">WTW</h1>
 
     <Header
-      isLoggedIn
       headerStyleType={HeaderStyleType.Film}
     />
 

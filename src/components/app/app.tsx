@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Main from '../../pages/main/main.tsx';
 import SignIn from '../../pages/sign-in/sign-in.tsx';
 import MyList from '../../pages/my-list/my-list.tsx';
@@ -12,23 +12,26 @@ import { FilmsData, ReviewsData } from '../../types';
 import { AppRoute, AuthStatus } from '../../const/const.ts';
 import { useAppSelector } from '../../hooks';
 import { LoadingScreen } from '../loading-screen/loading-screen.tsx';
+import HistoryRouter from '../history-router/history-router.tsx';
+import browserHistory from '../../browser-history.ts';
 
 type AppProps = {
   filmsData: FilmsData;
   reviewsData: ReviewsData;
 }
 
-function App ({filmsData, reviewsData}: AppProps) {
+function App({filmsData, reviewsData}: AppProps) {
   const isFilmsDataLoading = useAppSelector((state) => state.isFilmsDataLoading);
+  const authStatus = useAppSelector((state) => state.authStatus);
 
-  if (isFilmsDataLoading) {
+  if (authStatus === AuthStatus.Unknown || isFilmsDataLoading) {
     return (
-      <LoadingScreen />
+      <LoadingScreen/>
     );
   }
 
   return (
-    <BrowserRouter>
+    <HistoryRouter history={browserHistory}>
       <ScrollToTop/>
       <Routes>
         <Route
@@ -46,21 +49,26 @@ function App ({filmsData, reviewsData}: AppProps) {
         <Route
           path={AppRoute.MyList}
           element={
-            <PrivateRoute authStatus={AuthStatus.Auth}>
-              <MyList filmsData={filmsData}></MyList>
+            <PrivateRoute authStatus={authStatus}>
+              <MyList></MyList>
             </PrivateRoute>
           }
         >
         </Route>
         <Route
           path={AppRoute.Film}
-          element={<Film filmsData={filmsData} reviewsData={reviewsData}></Film>}
+          element={
+            <Film
+              filmsData={filmsData}
+              reviewsData={reviewsData}
+            />
+          }
         >
         </Route>
         <Route
           path={AppRoute.AddReview}
           element={
-            <PrivateRoute authStatus={AuthStatus.Auth}>
+            <PrivateRoute authStatus={authStatus}>
               <AddReview filmsData={filmsData}></AddReview>
             </PrivateRoute>
           }
@@ -77,7 +85,8 @@ function App ({filmsData, reviewsData}: AppProps) {
         >
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HistoryRouter>
   );
 }
+
 export default App;
