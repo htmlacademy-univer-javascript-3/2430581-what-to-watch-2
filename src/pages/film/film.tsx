@@ -8,7 +8,8 @@ import { AppRoute, FilmRoute } from '../../const/const.ts';
 import { Details, Overview, Reviews } from './film-tabs';
 import FilmNav from './film-nav/film-nav.tsx';
 import { ReviewsData } from '../../types';
-import MyListBtn from '../../components/my-list-btn/my-list-btn.tsx';
+import { MyListBtn } from '../../ui-components';
+import { useAppSelector } from '../../hooks';
 
 const LIKE_THIS_CARDS = 4;
 
@@ -22,6 +23,7 @@ const Film = ({filmsData, reviewsData}: FilmProps): JSX.Element => {
   const film =
     filmsData
       .find((item) => item.id === params.id);
+  const films = useAppSelector((state) => state.films);
   const renderTabs = (tabName: string | undefined): JSX.Element => {
     switch(tabName) {
       case FilmRoute.Overview:
@@ -44,7 +46,7 @@ const Film = ({filmsData, reviewsData}: FilmProps): JSX.Element => {
 
           <h1 className="visually-hidden">WTW</h1>
 
-          <Header isLoggedIn/>
+          <Header/>
 
           <div className="film-card__wrap">
             <div className="film-card__desc">
@@ -94,7 +96,7 @@ const Film = ({filmsData, reviewsData}: FilmProps): JSX.Element => {
         <section className="catalog catalog--like-this">
           <h2 className="catalog__title">More like this</h2>
 
-          <FilmList filmsData={filmsData} maxCards={LIKE_THIS_CARDS}/>
+          <FilmList filmsPreviewData={films} maxCards={LIKE_THIS_CARDS}/>
         </section>
 
         <Footer/>

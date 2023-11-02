@@ -5,13 +5,14 @@ import App from './components/app/app.tsx';
 import { filmsData } from './mocks/films.ts';
 import { reviewsData } from './mocks/reviews.ts';
 import { store } from './store';
-import { fetchFilmsAction } from './store/api-actions.ts';
+import { checkAuthAction, fetchFilmsAction } from './store/api-actions.ts';
 import ErrorMessage from './components/error-message/error-message.tsx';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+store.dispatch(checkAuthAction());
 store.dispatch(fetchFilmsAction());
 
 root.render(

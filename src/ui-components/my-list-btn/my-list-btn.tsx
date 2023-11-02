@@ -1,7 +1,7 @@
 type MyListBtnProps = {
   isFavorite: boolean;
 };
-const MyListBtn = ({isFavorite}: MyListBtnProps): JSX.Element => (
+export const MyListBtn = ({isFavorite}: MyListBtnProps): JSX.Element => (
   isFavorite ? (
     <svg
       viewBox="0 0 18 14"
@@ -20,5 +20,3 @@ const MyListBtn = ({isFavorite}: MyListBtnProps): JSX.Element => (
     </svg>
   )
 );
-
-export default MyListBtn;
