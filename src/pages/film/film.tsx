@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Header from '../../components/header/header.tsx';
 import NotFound404 from '../not-found-404/not-found-404.tsx';
 import FilmList from '../../components/film-list/film-list.tsx';
@@ -7,10 +7,10 @@ import { AppRoute, AuthStatus, FilmRoute } from '../../const/const.ts';
 import { Details, Overview, Reviews } from './film-tabs';
 import FilmNav from './film-nav/film-nav.tsx';
 import { MyListBtn } from '../../ui-components';
-import { useAppSelector } from '../../hooks';
-import { store } from '../../store';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchComments, fetchFilmByIdAction, fetchFilmsLikeThis } from '../../store/api-actions.ts';
 import { LoadingScreen } from '../../components/loading-screen/loading-screen.tsx';
+import { useEffect } from 'react';
 
 const LIKE_THIS_CARDS = 4;
 
@@ -21,12 +21,24 @@ const Film = (): JSX.Element => {
   const filmsLikeThis = useAppSelector((state) => state.filmsLikeThis);
   const reviews = useAppSelector((state) => state.filmReviews);
   const isFilmsDataLoading = useAppSelector((state) => state.isFilmsDataLoading);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   // Если убрать проверку !film, то будут бесконечно отправляться запросы :)
-  if (params.id && !film) {
-    store.dispatch(fetchFilmByIdAction(params.id));
-    store.dispatch(fetchFilmsLikeThis(params.id));
-    store.dispatch(fetchComments(params.id));
-  }
+  // if (params.id && !film) {
+  //   store.dispatch(fetchFilmByIdAction(params.id));
+  //   store.dispatch(fetchFilmsLikeThis(params.id));
+  // store.dispatch(fetchComments(params.id));
+  // }
+
+  useEffect(() => {
+    if (!params.id) {
+      return navigate(AppRoute.NotFoundPage);
+    }
+
+    dispatch(fetchFilmByIdAction(params.id));
+    dispatch(fetchFilmsLikeThis(params.id));
+    dispatch(fetchComments(params.id));
+  }, [params.id, navigate]);
 
   const renderTabs = (tabName: string | undefined): JSX.Element => {
     switch(tabName) {

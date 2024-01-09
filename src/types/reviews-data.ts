@@ -3,7 +3,7 @@ export type ReviewData = {
   date: string;
   user: string;
   comment: string;
-  score: string;
+  rating: string;
 }
 
 export type ReviewsData = ReviewData[];

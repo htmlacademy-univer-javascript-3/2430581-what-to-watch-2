@@ -19,7 +19,7 @@ const Review = ({review}: ReviewProps) => {
           <time className="review__date" dateTime={formatDate(review.date)}>{review.date}</time>
         </footer>
       </blockquote>
-      <div className="review__rating">{review.score}</div>
+      <div className="review__rating">{review.rating}</div>
     </div>
   );
 };

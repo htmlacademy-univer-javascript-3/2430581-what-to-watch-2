@@ -65,7 +65,7 @@ function App({filmsData}: AppProps) {
           path={AppRoute.AddReview}
           element={
             <PrivateRoute authStatus={authStatus}>
-              <AddReview filmsData={filmsData}></AddReview>
+              <AddReview></AddReview>
             </PrivateRoute>
           }
         >
@@ -73,6 +73,11 @@ function App({filmsData}: AppProps) {
         <Route
           path={AppRoute.Player}
           element={<Player filmsData={filmsData}></Player>}
+        >
+        </Route>
+        <Route
+          path={AppRoute.NotFoundPage}
+          element={<NotFound404></NotFound404>}
         >
         </Route>
         <Route

@@ -1,17 +1,47 @@
 import { useState } from 'react';
+import { APIRoute, AppRoute, FilmRoute } from '../../const/const.ts';
+import { useNavigate, useParams } from 'react-router-dom';
+import { api } from '../../store';
 
 type FormData = {
   name: string;
   value: string;
 }
 const AddReviewForm = (): JSX.Element => {
-  const [formData, setFormData] = useState({
-    'rating': '',
-    'review-text': '',
-  });
+  const params = useParams();
+  const [reviewText, setReviewText] = useState('');
+  const [rating, setRating] = useState(0);
+  const navigate = useNavigate();
   const onChangeHandler = ({name, value}: FormData) => {
-    setFormData({...formData, [name]: value});
+    if (name === 'rating') {
+      setRating(Number(value));
+    } else {
+      setReviewText(value);
+    }
   };
+
+  const sendComment = async () => {
+    if (params.id === undefined) {
+      throw 'id empty';
+    }
+    await api.post<Comment>(`${APIRoute.Comments}${params.id}`, {comment: reviewText, rating});
+  };
+
+  const handleSubmitClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    sendComment()
+      .then(() => {
+        if (params.id) {
+          navigate(AppRoute.Film.replace(':id', params.id).replace(':info', FilmRoute.Reviews));
+        } else {
+          navigate(AppRoute.Main);
+        }
+      })
+      .catch(() => {
+        navigate(AppRoute.Main);
+      });
+  };
+
   return (
     <div className="add-review">
       <form
@@ -175,6 +205,7 @@ const AddReviewForm = (): JSX.Element => {
             <button
               className="add-review__btn"
               type="submit"
+              onClick={handleSubmitClick}
             >Post
             </button>
           </div>
