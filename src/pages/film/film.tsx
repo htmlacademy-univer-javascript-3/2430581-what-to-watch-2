@@ -1,29 +1,33 @@
-import Header from '../../components/header/header.tsx';
-import { FilmsData } from '../../types';
-import NotFound404 from '../not-found-404/not-found-404.tsx';
 import { Link, useParams } from 'react-router-dom';
+import Header from '../../components/header/header.tsx';
+import NotFound404 from '../not-found-404/not-found-404.tsx';
 import FilmList from '../../components/film-list/film-list.tsx';
 import Footer from '../../components/footer/footer.tsx';
-import { AppRoute, FilmRoute } from '../../const/const.ts';
+import { AppRoute, AuthStatus, FilmRoute } from '../../const/const.ts';
 import { Details, Overview, Reviews } from './film-tabs';
 import FilmNav from './film-nav/film-nav.tsx';
-import { ReviewsData } from '../../types';
 import { MyListBtn } from '../../ui-components';
 import { useAppSelector } from '../../hooks';
+import { store } from '../../store';
+import { fetchComments, fetchFilmByIdAction, fetchFilmsLikeThis } from '../../store/api-actions.ts';
+import { LoadingScreen } from '../../components/loading-screen/loading-screen.tsx';
 
 const LIKE_THIS_CARDS = 4;
 
-type FilmProps = {
-  filmsData: FilmsData;
-  reviewsData: ReviewsData;
-};
-
-const Film = ({filmsData, reviewsData}: FilmProps): JSX.Element => {
+const Film = (): JSX.Element => {
   const params = useParams();
-  const film =
-    filmsData
-      .find((item) => item.id === params.id);
-  const films = useAppSelector((state) => state.films);
+  const authStatus = useAppSelector((state) => state.authStatus);
+  const film = useAppSelector((state) => state.film);
+  const filmsLikeThis = useAppSelector((state) => state.filmsLikeThis);
+  const reviews = useAppSelector((state) => state.filmReviews);
+  const isFilmsDataLoading = useAppSelector((state) => state.isFilmsDataLoading);
+  // Если убрать проверку !film, то будут бесконечно отправляться запросы :)
+  if (params.id && !film) {
+    store.dispatch(fetchFilmByIdAction(params.id));
+    store.dispatch(fetchFilmsLikeThis(params.id));
+    store.dispatch(fetchComments(params.id));
+  }
+
   const renderTabs = (tabName: string | undefined): JSX.Element => {
     switch(tabName) {
       case FilmRoute.Overview:
@@ -31,17 +35,24 @@ const Film = ({filmsData, reviewsData}: FilmProps): JSX.Element => {
       case FilmRoute.Details:
         return <Details film={film}/>;
       case FilmRoute.Reviews:
-        return <Reviews reviews={reviewsData}/>;
+        return <Reviews reviews={reviews}/>;
       default:
         return <Overview film={film}/>;
     }
   };
-  return film ? (
+
+  if (isFilmsDataLoading) {
+    return (
+      <LoadingScreen/>
+    );
+  }
+
+  return film && params.id ? (
     <>
-      <section className="film-card film-card--full">
+      <section className="film-card film-card--full" style={{background: film.backgroundColor}}>
         <div className="film-card__hero">
           <div className="film-card__bg">
-            <img src={film.posterImage} alt={film.name}/>
+            <img src={film.backgroundImage} alt={film.name}/>
           </div>
 
           <h1 className="visually-hidden">WTW</h1>
@@ -68,7 +79,10 @@ const Film = ({filmsData, reviewsData}: FilmProps): JSX.Element => {
                   <span>My list</span>
                   <span className="film-card__count">9</span>
                 </button>
-                <Link to={AppRoute.AddReview.replace(':id', film.id)} className="btn film-card__button">Add review</Link>
+                {
+                  authStatus === AuthStatus.Auth
+                  && <Link to={AppRoute.AddReview.replace(':id', film.id)} className="btn film-card__button">Add review</Link>
+                }
               </div>
             </div>
           </div>
@@ -86,7 +100,6 @@ const Film = ({filmsData, reviewsData}: FilmProps): JSX.Element => {
             <div className="film-card__desc">
               <FilmNav film={film} activeTab={params.info}/>
               {renderTabs(params.info)}
-              {/*<Overview/>*/}
             </div>
           </div>
         </div>
@@ -96,7 +109,7 @@ const Film = ({filmsData, reviewsData}: FilmProps): JSX.Element => {
         <section className="catalog catalog--like-this">
           <h2 className="catalog__title">More like this</h2>
 
-          <FilmList filmsPreviewData={films} maxCards={LIKE_THIS_CARDS}/>
+          <FilmList filmsPreviewData={filmsLikeThis} maxCards={LIKE_THIS_CARDS}/>
         </section>
 
         <Footer/>

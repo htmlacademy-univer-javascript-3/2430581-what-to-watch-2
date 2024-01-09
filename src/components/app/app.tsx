@@ -8,7 +8,7 @@ import Player from '../../pages/player/player.tsx';
 import NotFound404 from '../../pages/not-found-404/not-found-404.tsx';
 import PrivateRoute from '../private-route/private-route.tsx';
 import ScrollToTop from '../scroll-to-top/scroll-to-top.tsx';
-import { FilmsData, ReviewsData } from '../../types';
+import { FilmsData } from '../../types';
 import { AppRoute, AuthStatus } from '../../const/const.ts';
 import { useAppSelector } from '../../hooks';
 import { LoadingScreen } from '../loading-screen/loading-screen.tsx';
@@ -17,10 +17,9 @@ import browserHistory from '../../browser-history.ts';
 
 type AppProps = {
   filmsData: FilmsData;
-  reviewsData: ReviewsData;
 }
 
-function App({filmsData, reviewsData}: AppProps) {
+function App({filmsData}: AppProps) {
   const isFilmsDataLoading = useAppSelector((state) => state.isFilmsDataLoading);
   const authStatus = useAppSelector((state) => state.authStatus);
 
@@ -58,10 +57,7 @@ function App({filmsData, reviewsData}: AppProps) {
         <Route
           path={AppRoute.Film}
           element={
-            <Film
-              filmsData={filmsData}
-              reviewsData={reviewsData}
-            />
+            <Film/>
           }
         >
         </Route>

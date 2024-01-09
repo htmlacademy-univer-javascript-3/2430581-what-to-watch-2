@@ -1,37 +1,50 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
   changeGenre,
+  getFilmById,
   getFilmsByGenre,
   loadFilmsData,
   requireAuthorization,
   setError,
   setFilmsDataLoadingStatus,
-  setUserData
+  setFilmDataLoadingStatus,
+  setUserData,
+  getFilmsLikeThis,
+  getFilmReviews,
 } from './action.ts';
 import { AuthStatus, GENRE_ALL_GENRES } from '../const/const.ts';
-import { FilmsPreviewData, User } from '../types';
+import { FilmData, FilmsPreviewData, ReviewsData, User } from '../types';
 
 type InitialState = {
   genre: string;
+  isFilmDataLoading: boolean;
+  isFilmsDataLoading: boolean;
+  film: FilmData;
   films: FilmsPreviewData;
   sortedFilms: FilmsPreviewData;
+  filmsLikeThis: FilmsPreviewData;
+  filmReviews: ReviewsData;
   authStatus: AuthStatus;
   user: User;
-  isFilmsDataLoading: boolean;
   error: string | null;
 }
 
 const initialState: InitialState = {
   genre: 'All genres',
+  isFilmDataLoading: false,
+  isFilmsDataLoading: false,
+  film: null,
   films: [],
   sortedFilms: [],
+  filmsLikeThis: [],
+  filmReviews: [],
   authStatus: AuthStatus.Unknown,
   user: {
     name: '',
     avatarUrl: '',
     email: '',
   },
-  isFilmsDataLoading: false,
+
   error: null,
 };
 
@@ -54,6 +67,18 @@ const reducer = createReducer(initialState, (builder) => {
     .addCase(setFilmsDataLoadingStatus, (state, action) => {
       state.isFilmsDataLoading = action.payload;
     })
+    .addCase(setFilmDataLoadingStatus, (state, action) => {
+      state.isFilmDataLoading = action.payload;
+    })
+    .addCase(getFilmById, (state, action) => {
+      state.film = action.payload;
+    })
+    .addCase(getFilmsLikeThis, (state, action) => {
+      state.filmsLikeThis = action.payload;
+    })
+    .addCase(getFilmReviews, (state, action) => {
+      state.filmReviews = action.payload;
+    })
     .addCase(requireAuthorization, (state, action) => {
       state.authStatus = action.payload;
     })
@@ -65,4 +90,4 @@ const reducer = createReducer(initialState, (builder) => {
     });
 });
 
-export {reducer};
+export { reducer };

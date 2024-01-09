@@ -29,7 +29,7 @@ const Overview = ({film}: OverviewProps): JSX.Element => {
         <div className="film-rating__score">{film.rating.toString().replace('.', ',')}</div>
         <p className="film-rating__meta">
           <span className="film-rating__level">{translateRatingToText(film.rating)}</span>
-          <span className="film-rating__count">{film.scoreCount} ratings</span>
+          <span className="film-rating__count">{film.scoresCount} ratings</span>
         </p>
       </div>
       <div className="film-card__text">
