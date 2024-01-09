@@ -1,8 +1,8 @@
+import { useEffect, useState } from 'react';
 import { FilmPreviewData } from '../../types';
 import { Link } from 'react-router-dom';
 import { AppRoute, FilmRoute } from '../../const/const.ts';
 import VideoPlayer from '../video-player/video-player.tsx';
-import { useEffect, useState } from 'react';
 
 type FilmCardProps = {
   filmPreview: FilmPreviewData;

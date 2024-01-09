@@ -1,15 +1,17 @@
 import Footer from '../../components/footer/footer.tsx';
 import Header from '../../components/header/header.tsx';
-import { HeaderStyleType } from '../../const/const.ts';
+import { AppRoute, HeaderStyleType } from '../../const/const.ts';
 import { FormEvent, useRef } from 'react';
 import { useAppDispatch } from '../../hooks';
 import { loginAction } from '../../store/api-actions.ts';
+import { useNavigate } from 'react-router-dom';
 
 const SignIn = (): JSX.Element => {
   const loginRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
 
@@ -70,6 +72,7 @@ const SignIn = (): JSX.Element => {
             <button
               className="sign-in__btn"
               type="submit"
+              onClick={() => navigate(AppRoute.Main)}
             >Sign in
             </button>
           </div>

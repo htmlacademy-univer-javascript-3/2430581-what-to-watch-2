@@ -10,7 +10,7 @@ const Player = ({filmsData}: PlayerProps): JSX.Element => {
   const params = useParams();
   const film =
     filmsData
-      .find((item) => item.id === params.id);
+      .find((item) => item && item.id === params.id);
 
   return film ? (
     <div className="player">

@@ -1,9 +1,9 @@
 export type ReviewData = {
   id: string;
-  text: string;
-  score: string;
-  name: string;
   date: string;
+  user: string;
+  comment: string;
+  rating: string;
 }
 
 export type ReviewsData = ReviewData[];

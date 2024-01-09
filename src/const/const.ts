@@ -11,6 +11,7 @@ export enum AppRoute {
   Film = '/films/:id/:info',
   AddReview = '/films/:id/review',
   Player = '/player/:id',
+  NotFoundPage = '/404'
 }
 
 export enum FilmRoute {
@@ -31,6 +32,9 @@ export const TIMEOUT_SHOW_ERROR = 5000;
 
 export enum APIRoute {
   Films = '/films',
+  Film = '/films/',
+  LikeThis = '/similar',
+  Comments = '/comments/',
   Login = '/login',
   Logout = '/logout',
 }
