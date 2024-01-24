@@ -1,99 +1,96 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import Header from '../../components/header/header.tsx';
-import NotFound404 from '../not-found-404/not-found-404.tsx';
-import FilmList from '../../components/film-list/film-list.tsx';
-import Footer from '../../components/footer/footer.tsx';
-import { AppRoute, AuthStatus, FilmRoute } from '../../const/const.ts';
-import { Details, Overview, Reviews } from './film-tabs';
-import FilmNav from './film-nav/film-nav.tsx';
-import { MyListBtn } from '../../ui-components';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { fetchComments, fetchFilmByIdAction, fetchFilmsLikeThis } from '../../store/api-actions.ts';
-import { LoadingScreen } from '../../components/loading-screen/loading-screen.tsx';
-import { useEffect } from 'react';
+import { FC, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import Logo from '../../components/logo/logo.tsx';
+import UserBlock from '../../components/user-block/user-block.tsx';
+import { Buttons } from '../../components/buttons/buttons.ts';
+import { Tabs } from '../../components/tabs/tabs.tsx';
+import { ITab } from '../../components/tabs/types.ts';
+import { OverviewMemo } from './overview.tsx';
+import { DetailsMemo } from './details.tsx';
+import { ReviewsMemo } from './reviews.tsx';
+import { LikeThisMemo } from '../../components/like-this/like-this.tsx';
+import { Page404 } from '../page-404/page-404.tsx';
+import { useAppDispatch, useAppSelector } from '../../hooks/store.ts';
+import {
+  selectFilmData, selectFilmError, selectFilmStatus,
+} from '../../store/films/film-selectors.ts';
+import { authorizationStatusData } from '../../store/auth/auth-selectors.ts';
+import { fetchFilm, fetchReviews, fetchSimilar } from '../../store/api-actions.ts';
+import { ApiStatusPendingEnum } from '../../types/api.ts';
+import { Spinner } from '../../components/spinner/spinner.tsx';
 
-const LIKE_THIS_CARDS = 4;
 
-const Film = (): JSX.Element => {
-  const params = useParams();
-  const authStatus = useAppSelector((state) => state.authStatus);
-  const film = useAppSelector((state) => state.film);
-  const filmsLikeThis = useAppSelector((state) => state.filmsLikeThis);
-  const reviews = useAppSelector((state) => state.filmReviews);
-  const isFilmsDataLoading = useAppSelector((state) => state.isFilmsDataLoading);
+export const Film: FC = () => {
+  const { id = '' } = useParams();
+
+  const film = useAppSelector(selectFilmData);
+  const filmError = useAppSelector(selectFilmError);
+  const filmStatus = useAppSelector(selectFilmStatus);
+  const isAuth = useAppSelector(authorizationStatusData);
+
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  // Если убрать проверку !film, то будут бесконечно отправляться запросы :)
-  // if (params.id && !film) {
-  //   store.dispatch(fetchFilmByIdAction(params.id));
-  //   store.dispatch(fetchFilmsLikeThis(params.id));
-  // store.dispatch(fetchComments(params.id));
-  // }
 
   useEffect(() => {
-    if (!params.id) {
-      return navigate(AppRoute.NotFoundPage);
+    if (id) {
+      dispatch(fetchFilm(id));
+      dispatch(fetchSimilar(id));
+      dispatch(fetchReviews(id));
     }
+  }, [id, dispatch]);
 
-    dispatch(fetchFilmByIdAction(params.id));
-    dispatch(fetchFilmsLikeThis(params.id));
-    dispatch(fetchComments(params.id));
-  }, [params.id, navigate]);
 
-  const renderTabs = (tabName: string | undefined): JSX.Element => {
-    switch(tabName) {
-      case FilmRoute.Overview:
-        return <Overview film={film}/>;
-      case FilmRoute.Details:
-        return <Details film={film}/>;
-      case FilmRoute.Reviews:
-        return <Reviews reviews={reviews}/>;
-      default:
-        return <Overview film={film}/>;
+  const tabs: ITab[] = [
+    {
+      label: 'Overview',
+      component: <OverviewMemo />
+    },
+    {
+      label: 'Details',
+      component: <DetailsMemo />
+    },
+    {
+      label: 'Reviews',
+      component: <ReviewsMemo />
     }
-  };
+  ];
 
-  if (isFilmsDataLoading) {
-    return (
-      <LoadingScreen/>
-    );
+  if (filmStatus === ApiStatusPendingEnum.LOADING) {
+    return <Spinner/>;
   }
 
-  return film && params.id ? (
+  if (!film || filmError) {
+    return <Page404/>;
+  }
+
+  return (
     <>
-      <section className="film-card film-card--full" style={{background: film.backgroundColor}}>
+      <section style={{'background': `${film.backgroundColor}`}} className="film-card film-card--full">
         <div className="film-card__hero">
           <div className="film-card__bg">
-            <img src={film.backgroundImage} alt={film.name}/>
+            <img src={film.backgroundImage} alt={film.name} />
           </div>
 
           <h1 className="visually-hidden">WTW</h1>
 
-          <Header/>
-
+          <header className="page-header film-card__head">
+            <Logo />
+            <UserBlock />
+          </header>
           <div className="film-card__wrap">
             <div className="film-card__desc">
               <h2 className="film-card__title">{film.name}</h2>
               <p className="film-card__meta">
-                <span className="film-card__genre">{film.genre}</span>
+                <span className="film-card__genre">
+                  {film.genre}
+                </span>
                 <span className="film-card__year">{film.released}</span>
               </p>
 
               <div className="film-card__buttons">
-                <button className="btn btn--play film-card__button" type="button">
-                  <svg viewBox="0 0 19 19" width="19" height="19">
-                    <use xlinkHref="#play-s"></use>
-                  </svg>
-                  <span>Play</span>
-                </button>
-                <button className="btn btn--list film-card__button" type="button">
-                  <MyListBtn isFavorite={film.isFavorite}/>
-                  <span>My list</span>
-                  <span className="film-card__count">9</span>
-                </button>
+                <Buttons.Play filmId={id}/>
+                <Buttons.MyListButton film={film} />
                 {
-                  authStatus === AuthStatus.Auth
-                  && <Link to={AppRoute.AddReview.replace(':id', film.id)} className="btn film-card__button">Add review</Link>
+                  isAuth && <Buttons.AddReview filmId={id}/>
                 }
               </div>
             </div>
@@ -104,32 +101,20 @@ const Film = (): JSX.Element => {
           <div className="film-card__info">
             <div className="film-card__poster film-card__poster--big">
               <img
-                src={film.posterImage} alt={film.name} width="218"
+                src={film.posterImage}
+                alt={film.name}
+                width="218"
                 height="327"
               />
             </div>
-
             <div className="film-card__desc">
-              <FilmNav film={film} activeTab={params.info}/>
-              {renderTabs(params.info)}
+              <Tabs tabs={tabs} />
             </div>
           </div>
         </div>
       </section>
 
-      <div className="page-content">
-        <section className="catalog catalog--like-this">
-          <h2 className="catalog__title">More like this</h2>
-
-          <FilmList filmsPreviewData={filmsLikeThis} maxCards={LIKE_THIS_CARDS}/>
-        </section>
-
-        <Footer/>
-      </div>
+      <LikeThisMemo genre={film.genre}/>
     </>
-  ) : (
-    <NotFound404/>
   );
 };
-
-export default Film;
