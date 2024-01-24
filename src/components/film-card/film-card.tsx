@@ -1,75 +1,54 @@
-import { useEffect, useState } from 'react';
-import { FilmPreviewData } from '../../types';
 import { Link } from 'react-router-dom';
-import { AppRoute, FilmRoute } from '../../const/const.ts';
-import VideoPlayer from '../video-player/video-player.tsx';
+import { Buttons } from '../buttons/buttons.ts';
+import UserBlock from '../user-block/user-block.tsx';
+import { FC, memo } from 'react';
+import { Film } from '../../types/film.ts';
+import { useAppSelector } from '../../hooks/store.ts';
+import { authorizationStatusData } from '../../store/auth/auth-selectors.ts';
 
-type FilmCardProps = {
-  filmPreview: FilmPreviewData;
-  clickHandler: (item: FilmPreviewData) => void;
+interface IFilmCardProps {
+  film: Film;
 }
-
-const FilmCard = ({filmPreview, clickHandler}: FilmCardProps): JSX.Element => {
-  const [video, setVideo] = useState(false);
-  const [isArticleHover, setArticleHover] = useState(false);
-
-  const mouseOverHandler = () => {
-    setArticleHover(true);
-  };
-
-  const mouseOutHandler = () => {
-    setArticleHover(false);
-    setVideo(false);
-  };
-
-  useEffect(() => {
-    const hoverTimout =
-      isArticleHover
-        ? setTimeout(() => {
-          setVideo(true);
-        }, 1000)
-        : '';
-
-    return () => {
-      clearTimeout(hoverTimout);
-    };
-  }, [isArticleHover]);
-
+const FilmCard: FC<IFilmCardProps> = ({ film }) => {
+  const { backgroundImage, name, genre, id, posterImage, released } = film;
+  const isAuth = useAppSelector(authorizationStatusData);
   return (
-    <article
-      onClick={() => clickHandler(filmPreview)}
-      onMouseOver={mouseOverHandler}
-      onMouseOut={mouseOutHandler}
-      className="small-film-card catalog__films-card"
-    >
-      <div className="small-film-card__image">
-        {
-          video ? (
-            <VideoPlayer videoLink={filmPreview.previewVideoLink} posterImage={filmPreview.previewImage}></VideoPlayer>
-          ) : (
-            <img
-              src={filmPreview.previewImage}
-              alt={filmPreview.name}
-              width="280"
-              height="175"
-            />
-          )
-        }
+    <section className="film-card" data-testid="card-link">
+      <div className="film-card__bg">
+        <img src={backgroundImage} alt={name} />
       </div>
-      {
-        !video && (
-          <h3 className="small-film-card__title">
-            <Link
-              to={`${AppRoute.Film.replace(':id', filmPreview.id).replace(':info', FilmRoute.Overview)}`}
-              className="small-film-card__link"
-            >
-              {filmPreview.name}
-            </Link>
-          </h3>
-        )
-      }
-    </article>
+      <h1 className="visually-hidden">WTW</h1>
+      <header className="page-header film-card__head">
+        <div className="logo">
+          <Link className="logo__link logo__link--light" to="/">
+            <span className="logo__letter logo__letter--1">W</span>
+            <span className="logo__letter logo__letter--2">T</span>
+            <span className="logo__letter logo__letter--3">W</span>
+          </Link>
+        </div>
+        <UserBlock />
+      </header>
+      <div className="film-card__wrap">
+        <div className="film-card__info">
+          <div className="film-card__poster">
+            <img src={posterImage} alt={name} width="218" height="327" />
+          </div>
+          <div className="film-card__desc">
+            <h2 className="film-card__title">{name}</h2>
+            <p className="film-card__meta">
+              <span className="film-card__genre">{genre}</span>
+              <span className="film-card__year">{released}</span>
+            </p>
+            <div className="film-card__buttons">
+              <Buttons.Play filmId={id}/>
+              <Buttons.MyListButton film={film} />
+              {isAuth && <Buttons.AddReview filmId={id}/>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 
-export default FilmCard;
+export const FilmCardMemo = memo(FilmCard);

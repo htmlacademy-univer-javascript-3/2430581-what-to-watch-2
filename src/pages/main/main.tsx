@@ -1,59 +1,49 @@
-import { useState } from 'react';
-import { FilmPreviewData } from '../../types';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import FilmList from '../../components/film-list/film-list.tsx';
-import FilmPreview from '../../components/film-preview/film-preview.tsx';
-import Footer from '../../components/footer/footer.tsx';
-import GenreList from '../../components/genre-list/genre-list.tsx';
-import { changeGenre, getFilmsByGenre } from '../../store/action.ts';
-import { ShowMoreBtn } from '../../ui-components';
+import { FC, memo, useEffect } from 'react';
+import { Footer } from '../../components/footer/footer.tsx';
+import { FilmCardMemo } from '../../components/film-card/film-card.tsx';
+import { CatalogMemo } from '../../components/catalog/catalog.tsx';
+import { useAppDispatch, useAppSelector } from '../../hooks/store.ts';
+import { Spinner } from '../../components/spinner/spinner.tsx';
+import { Page404 } from '../page-404/page-404.tsx';
+import {
+  selectFilmsData,
+  selectFilmsError,
+  selectFilmsStatus, selectPromoData
+} from '../../store/films/film-selectors.ts';
+import { fetchMovies, fetchPromo } from '../../store/api-actions.ts';
 
-const START_CARDS_COUNT = 8;
-
-function Main (): JSX.Element {
-  const [cardsCount, setCardsCount] = useState(START_CARDS_COUNT);
+const MainPage: FC = () => {
   const dispatch = useAppDispatch();
-  const genreName = useAppSelector((state) => state.genre);
-  const films = useAppSelector((state) => state.films);
-  const sortedFilms = useAppSelector((state) => state.sortedFilms);
-  const [firstFilm] = films;
-  const [filmPreview, setFilmPreview] = useState(firstFilm);
-  const handleFilmCardClick = (film: FilmPreviewData) => {
-    setFilmPreview(film);
-  };
-  const handleBtnClick = () => {
-    if (cardsCount < films.length) {
-      setCardsCount((prevState) => prevState + START_CARDS_COUNT);
+  const films = useAppSelector(selectFilmsData);
+  const filmError = useAppSelector(selectFilmsError);
+  const filmStatus = useAppSelector(selectFilmsStatus);
+  const promoData = useAppSelector(selectPromoData);
+
+  useEffect(() => {
+    dispatch(fetchPromo());
+    if (films === null) {
+      dispatch(fetchMovies());
     }
-  };
-  const handleGenreClick = (genre: string) => {
-    dispatch(changeGenre({genre}));
-    dispatch(getFilmsByGenre({genre}));
-    setCardsCount(START_CARDS_COUNT);
-  };
+  }, [dispatch, films]);
+
+  if (filmError) {
+    return <Page404 />;
+  }
+
+  if (!promoData || filmStatus === 'LOADING') {
+    return <Spinner />;
+  }
+
   return (
     <>
-      <FilmPreview filmPreview={filmPreview}/>
+      <FilmCardMemo film={promoData} />
 
       <div className="page-content">
-        <section className="catalog">
-          <h2 className="catalog__title visually-hidden">Catalog</h2>
-
-          <GenreList filmsPreviewData={films} activeGenre={genreName} clickHandler={handleGenreClick}/>
-
-          <FilmList filmsPreviewData={sortedFilms} maxCards={cardsCount} clickHandler={handleFilmCardClick}/>
-
-          {
-            cardsCount < sortedFilms.length && (
-              <ShowMoreBtn clickHandler={handleBtnClick}/>
-            )
-          }
-        </section>
-
-        <Footer/>
+        <CatalogMemo withGenres />
+        <Footer />
       </div>
     </>
   );
-}
+};
 
-export default Main;
+export const Main = memo(MainPage);
